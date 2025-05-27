@@ -1,5 +1,5 @@
 import { IsEmail, IsString, IsEnum, MinLength } from 'class-validator';
-import { UserType } from 'src/shared/enums/user-type.enum';
+import { UserType } from '@prisma/client';
 
 export class CreateUserDto {
   @IsEmail()

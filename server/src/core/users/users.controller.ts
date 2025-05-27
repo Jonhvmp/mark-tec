@@ -8,28 +8,31 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './entities/user.entity';
+import { User } from '@prisma/client';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  async create(@Body() CreateUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(CreateUserDto);
+  async create(@Body() CreateUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
+    const user = await this.usersService.create(CreateUserDto);
+    const { password, ...result } = user;
+    return result;
   }
 
   @Get()
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<Omit<User, 'password'>[]> {
     return this.usersService.findAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string): Promise<User> {
+  async findOne(@Param('id') id: string): Promise<Omit<User, 'password'>> {
     const user = await this.usersService.findById(id);
     if (!user) {
-      throw new NotFoundException(`User with id ${id} not found`);
+      throw new NotFoundException(`Usuário não encontrado`);
     }
-    return user;
+    const { password, ...result } = user;
+    return result;
   }
 }
