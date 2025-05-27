@@ -1,15 +1,14 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
+import { UserType } from '@prisma/client';
 
 export interface JwtPayload {
   sub: string;
   email: string;
-  userType: string;
-  iat?: number;
-  exp?: number;
+  userType: UserType;
 }
 
 @Injectable()
@@ -18,15 +17,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private configService: ConfigService,
     private usersService: UsersService,
   ) {
-    const jwtSecret = configService.get<string>('JWT_SECRET');
-    if (!jwtSecret) {
-      throw new Error('JWT_SECRET não está configurado');
-    }
-
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: jwtSecret,
+      secretOrKey:
+        configService.get<string>('jwt.secret') ||
+        configService.get<string>('JWT_SECRET'),
     });
   }
 
