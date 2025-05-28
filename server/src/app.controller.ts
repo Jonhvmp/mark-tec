@@ -15,8 +15,15 @@ export class AppController {
       message: 'Technical Services Platform API',
       status: 'running',
       version: '1.0.0',
-      environment: this.configService.get<string>('app.environment'),
+      environment: this.configService.get<string>('NODE_ENV'),
       timestamp: new Date().toISOString(),
+      prefix: this.configService.get<string>('API_PREFIX'),
+      endpoints: {
+        health: '/health',
+        api: `/${this.configService.get<string>('API_PREFIX') || 'api/v1'}`,
+        auth: `/${this.configService.get<string>('API_PREFIX') || 'api/v1'}/auth`,
+        users: `/${this.configService.get<string>('API_PREFIX') || 'api/v1'}/users`,
+      },
     };
   }
 
@@ -28,8 +35,8 @@ export class AppController {
       status: 'ok',
       uptime: process.uptime(),
       timestamp: new Date().toISOString(),
-      environment: this.configService.get<string>('app.environment'),
-      port: this.configService.get<number>('app.port'),
+      environment: this.configService.get<string>('NODE_ENV'),
+      port: this.configService.get<number>('PORT'),
       database: {
         status: dbHealthy ? 'connected' : 'disconnected',
         healthy: dbHealthy,

@@ -9,7 +9,12 @@ async function bootstrap() {
   const logger = new Logger('Bootstrap');
 
   try {
-    const app = await NestFactory.create(AppModule); // Interceptor global de logging
+    const app = await NestFactory.create(AppModule);
+
+    const configService = app.get(ConfigService);
+    const apiPrefix = configService.get<string>('API_PREFIX') || 'api';
+    app.setGlobalPrefix(apiPrefix);
+
     app.useGlobalInterceptors(new LoggingInterceptor());
 
     // Filtro global de exceções
@@ -35,7 +40,6 @@ async function bootstrap() {
     });
 
     // config PORT
-    const configService = app.get(ConfigService);
     const port = configService.get<number>('PORT') || 2004;
     const environment = configService.get<string>('NODE_ENV') || 'development';
 
@@ -43,12 +47,10 @@ async function bootstrap() {
 
     logger.log(`Aplicação rodando em: http://localhost:${port}`);
     logger.log(`Environment: ${environment}`);
-    logger.log(
-      `API Prefix: ${configService.get<string>('API_PREFIX') || 'sem prefixo'}`,
-    );
+    logger.log(`API Prefix:/${apiPrefix}`);
     logger.log(`Logs de requisições HTTP habilitados`);
     logger.log(
-      `Health check disponível em: http://localhost:${port}/health`,
+      `Health check disponível em: http://localhost:${port}/${apiPrefix}/health`,
     );
   } catch (error) {
     logger.error('Erro ao inicializar a aplicação:', error);
