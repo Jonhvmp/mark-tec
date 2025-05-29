@@ -20,13 +20,96 @@ export class UsersService {
     });
   }
 
+  async findByPhone(phone: string): Promise<User | null> {
+    return this.prisma.user.findUnique({
+      where: { phone },
+    });
+  }
+
+  async findByPasswordResetToken(token: string): Promise<User | null> {
+    return this.prisma.user.findFirst({
+      where: { passwordResetToken: token },
+    });
+  }
+
   async create(createUserDto: CreateUserDto): Promise<User> {
-    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 12);
 
     return this.prisma.user.create({
       data: {
         ...createUserDto,
         password: hashedPassword,
+      },
+    });
+  }
+
+  async updateLastLogin(id: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: { lastLoginAt: new Date() },
+    });
+  }
+
+  async updatePassword(id: string, newPassword: string): Promise<void> {
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    await this.prisma.user.update({
+      where: { id },
+      data: { password: hashedPassword },
+    });
+  }
+
+  async setPasswordResetToken(
+    id: string,
+    token: string,
+    expires: Date,
+  ): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        passwordResetToken: token,
+        passwordResetExpires: expires,
+      },
+    });
+  }
+
+  async clearPasswordResetToken(id: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        passwordResetToken: null,
+        passwordResetExpires: null,
+      },
+    });
+  }
+
+  async incrementLoginAttempts(id: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        loginAttempts: {
+          increment: 1,
+        },
+      },
+    });
+  }
+
+  async resetLoginAttempts(id: string): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        loginAttempts: 0,
+        lockedUntil: null,
+      },
+    });
+  }
+
+  async lockUser(id: string, lockUntil: Date): Promise<void> {
+    await this.prisma.user.update({
+      where: { id },
+      data: {
+        lockedUntil: lockUntil,
+        loginAttempts: 0,
       },
     });
   }
@@ -43,21 +126,17 @@ export class UsersService {
         city: true,
         state: true,
         isActive: true,
+        isEmailVerified: true,
+        emailVerificationToken: true,
+        passwordResetToken: true,
+        passwordResetExpires: true,
+        lastLoginAt: true,
+        loginAttempts: true,
+        lockedUntil: true,
         createdAt: true,
         updatedAt: true,
         password: false,
       },
     });
-  }
-
-  async update(id: string, updateData: Partial<User>): Promise<User> {
-    try {
-      return await this.prisma.user.update({
-        where: { id },
-        data: updateData,
-      });
-    } catch (error) {
-      throw new NotFoundException('User not found');
-    }
   }
 }

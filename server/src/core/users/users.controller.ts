@@ -13,10 +13,11 @@ import { User } from '@prisma/client';
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
   @Post()
-  async create(@Body() CreateUserDto: CreateUserDto): Promise<Omit<User, 'password'>> {
-    const user = await this.usersService.create(CreateUserDto);
+  async create(
+    @Body() createUserDto: CreateUserDto,
+  ): Promise<Omit<User, 'password'>> {
+    const user = await this.usersService.create(createUserDto);
     const { password, ...result } = user;
     return result;
   }
