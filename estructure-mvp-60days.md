@@ -3,6 +3,8 @@
 ```estructure
 mark-tec-mvp/
 ├── backend/                    # 38 dias
+|   ├──prisma
+|   |   ├── schema.prisma
 │   ├── src/
 │   │   ├── core/              # 🔥 ESSENCIAL - Semana 1-2
 │   │   │   ├── auth/
@@ -29,7 +31,8 @@ mark-tec-mvp/
 │   │   │   │       └── user.entity.ts
 │   │   │   │
 │   │   │   └── database/
-│   │   │       ├── database.module.ts
+│   │   │       ├── prisma.module.ts
+|   |   |       ├── prisma.service.ts
 │   │   │       ├── migrations/
 │   │   │       └── seeds/
 │   │   │
@@ -63,20 +66,26 @@ mark-tec-mvp/
 │   │   │           └── search-filters.dto.ts
 │   │   │
 │   │   ├── payments/          # 💳 REAL - Semana 5-6
-│   │   │   ├── payments.controller.ts
+│   │   │   ├── controllers/
+│   │   │   │   ├── payments.controller.ts
+│   │   │   │   └── plans.controller.ts
 │   │   │   ├── payments.service.ts
 │   │   │   ├── payments.module.ts
 │   │   │   ├── dto/
 │   │   │   │   ├── create-subscription.dto.ts
 │   │   │   │   ├── process-payment.dto.ts
-│   │   │   │   └── update-payment-method.dto.ts
+│   │   │   │   ├── update-payment-method.dto.ts
+│   │   │   │   └── create-plan.dto.ts
 │   │   │   ├── entities/
 │   │   │   │   ├── subscription.entity.ts
-│   │   │   │   └── transaction.entity.ts
+│   │   │   │   ├── transaction.entity.ts
+│   │   │   │   └── plan.entity.ts
 │   │   │   └── services/
 │   │   │       ├── stripe.service.ts
 │   │   │       ├── webhook.service.ts
-│   │   │       └── billing.service.ts
+│   │   │       ├── billing.service.ts
+│   │   │       ├── plans.service.ts
+│   │   │       └── subscriptions.service.ts
 │   │   │
 │   │   ├── admin/             # 👨‍💼 ADMIN - Semana 6-7
 │   │   │   ├── admin.controller.ts
@@ -101,7 +110,8 @@ mark-tec-mvp/
 │   │   │   │   ├── user-type.enum.ts
 │   │   │   │   ├── approval-status.enum.ts
 │   │   │   │   ├── payment-status.enum.ts
-│   │   │   │   └── subscription-status.enum.ts
+│   │   │   │   ├── subscription-status.enum.ts
+│   │   │   │   └── plan-type.enum.ts
 │   │   │   ├── guards/
 │   │   │   │   └── roles.guard.ts
 │   │   │   ├── decorators/
@@ -118,7 +128,6 @@ mark-tec-mvp/
 │   │   │       └── validators.util.ts
 │   │   │
 │   │   ├── config/
-│   │   │   ├── database.config.ts
 │   │   │   ├── jwt.config.ts
 │   │   │   ├── app.config.ts
 │   │   │   ├── stripe.config.ts
